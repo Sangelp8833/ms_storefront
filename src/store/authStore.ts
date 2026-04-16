@@ -4,28 +4,29 @@ interface AuthState {
   token: string | null
   userId: string | null
   email: string | null
-  setAuth: (token: string, userId: string, email: string) => void
+  name: string | null
+  setAuth: (token: string, userId: string, email: string, name: string) => void
   clearAuth: () => void
 }
 
-const TOKEN_KEY = 'storefront_token'
+const K = { token: 'storefront_token', userId: 'storefront_user_id', email: 'storefront_email', name: 'storefront_name' }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token:  localStorage.getItem(TOKEN_KEY),
-  userId: localStorage.getItem('storefront_user_id'),
-  email:  localStorage.getItem('storefront_email'),
+export const useAuthStore = create<AuthState>(() => ({
+  token:  localStorage.getItem(K.token),
+  userId: localStorage.getItem(K.userId),
+  email:  localStorage.getItem(K.email),
+  name:   localStorage.getItem(K.name),
 
-  setAuth: (token, userId, email) => {
-    localStorage.setItem(TOKEN_KEY, token)
-    localStorage.setItem('storefront_user_id', userId)
-    localStorage.setItem('storefront_email', email)
-    set({ token, userId, email })
+  setAuth: (token, userId, email, name) => {
+    localStorage.setItem(K.token, token)
+    localStorage.setItem(K.userId, userId)
+    localStorage.setItem(K.email, email)
+    localStorage.setItem(K.name, name)
+    useAuthStore.setState({ token, userId, email, name })
   },
 
   clearAuth: () => {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem('storefront_user_id')
-    localStorage.removeItem('storefront_email')
-    set({ token: null, userId: null, email: null })
+    Object.values(K).forEach((k) => localStorage.removeItem(k))
+    useAuthStore.setState({ token: null, userId: null, email: null, name: null })
   },
 }))
